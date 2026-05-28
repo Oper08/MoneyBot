@@ -1,3 +1,4 @@
+
 const TelegramBot = require('node-telegram-bot-api');
 
 // TOKEN БОТА
@@ -27,7 +28,11 @@ bot.onText(/\/start/, (msg) => {
 
 🐥 Видео ДАРИ №2 — 500 тг
 
-🎁 Комплект из двух — 800 тг
+😻 Видео Айым №3 — 500 тг
+
+🎁 Комплект из трех — 1000 тг
+
+🎦 Доступ тгк канал — 2000 тг
 
 ━━━━━━━━━━━━━━
 
@@ -40,7 +45,7 @@ bot.onText(/\/start/, (msg) => {
 
                 [
                     {
-                        text: '🛒 Купить Видео  1',
+                        text: '🛒 Купить Видео 1',
                         callback_data: 'buy1'
                     }
                 ],
@@ -54,8 +59,22 @@ bot.onText(/\/start/, (msg) => {
 
                 [
                     {
+                        text: '🛒 Купить Видео 3',
+                        callback_data: 'buy3'
+                    }
+                ],
+
+                [
+                    {
                         text: '🎁 Купить комплект',
                         callback_data: 'buyall'
+                    }
+                ],
+
+                [
+                    {
+                        text: '🎦 Доступ TGK канал',
+                        callback_data: 'tgk'
                     }
                 ],
 
@@ -86,13 +105,13 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(chatId, text, options);
 });
 
-// КНОПКИ
+// CALLBACK
 bot.on('callback_query', (query) => {
 
     const chatId = query.message.chat.id;
     const data = query.data;
 
-    // УРОК 1
+    // ВИДЕО 1
     if (data === 'buy1') {
 
         waitingUsers[chatId] = 'Видео №1';
@@ -121,9 +140,10 @@ bot.on('callback_query', (query) => {
         ]
     }
 });
+
     }
 
-    // УРОК 2
+    // ВИДЕО 2
     if (data === 'buy2') {
 
         waitingUsers[chatId] = 'Видео №2';
@@ -152,19 +172,18 @@ bot.on('callback_query', (query) => {
         ]
     }
 });
+
     }
 
-    // КОМПЛЕКТ
-    if (data === 'buyall') {
+    // ВИДЕО 3
+    if (data === 'buy3') {
 
-        waitingUsers[chatId] = 'Комплект';
+        waitingUsers[chatId] = 'Видео №3';
 
         bot.sendMessage(chatId,
-`🔥 КОМПЛЕКТ СО СКИДКОЙ
+`💳 ОПЛАТА Видео №3
 
-📦 2 видео
-
-💰 Стоимость: 800 тг
+💰 Стоимость: 500 тг
 
 📱 Оплата на card:
 
@@ -185,9 +204,76 @@ bot.on('callback_query', (query) => {
         ]
     }
 });
+
     }
 
-    // НАЖАЛ ОПЛАТИЛ
+    // КОМПЛЕКТ
+    if (data === 'buyall') {
+
+        waitingUsers[chatId] = 'Комплект';
+
+        bot.sendMessage(chatId,
+`🔥 КОМПЛЕКТ СО СКИДКОЙ
+
+📦 3 видео
+
+💰 Стоимость: 1000 тг
+
+📱 Оплата на card:
+
+4400 4302 1066 1242
+
+После оплаты:
+1️⃣ Нажмите кнопку ниже
+2️⃣ Отправьте чек`,
+{
+    reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: '✅ Я оплатил',
+                    callback_data: 'paid'
+                }
+            ]
+        ]
+    }
+});
+
+    }
+
+    // TGK
+    if (data === 'tgk') {
+
+        waitingUsers[chatId] = 'TGK Канал';
+
+        bot.sendMessage(chatId,
+`🎦 ДОСТУП TGK КАНАЛ
+
+💰 Стоимость: 2000 тг
+
+📱 Оплата на card:
+
+4400 4302 1066 1242
+
+После оплаты:
+1️⃣ Нажмите кнопку ниже
+2️⃣ Отправьте чек`,
+{
+    reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: '✅ Я оплатил',
+                    callback_data: 'paid'
+                }
+            ]
+        ]
+    }
+});
+
+    }
+
+    // ОПЛАТИЛ
     if (data === 'paid') {
 
         bot.sendMessage(chatId,
@@ -200,11 +286,11 @@ bot.on('callback_query', (query) => {
         bot.sendMessage(chatId,
 `⭐ ОТЗЫВЫ
 
-🔥 от от шешес!
+🔥 Всё пришло
 
-🔥 hot girls хааххаха!
+🔥 Спасибо большое
 
-🔥 Спасибо большое!`);
+🔥 Быстро ответили`);
     }
 
     // КОНТАКТЫ
@@ -234,7 +320,7 @@ Telegram:
 
 4️⃣ Дождитесь подтверждения
 
-5️⃣ Получите доступ к Видео`);
+5️⃣ Получите доступ`);
     }
 
     // ПОДТВЕРЖДЕНИЕ
@@ -245,9 +331,7 @@ Telegram:
         bot.sendMessage(userId,
 `✅ Оплата подтверждена!
 
-🎉 Спасибо за покупку.
-
-Скоро вам отправят Видео.`);
+🎉 Спасибо за покупку.`);
 
         bot.answerCallbackQuery(query.id, {
             text: 'Оплата подтверждена'
@@ -271,16 +355,14 @@ Telegram:
 
 });
 
-// ПРИЁМ ЧЕКОВ
-
-    // ПРИЁМ ФОТО
+// ПРИЁМ ФОТО
 bot.on('photo', (msg) => {
 
     const chatId = msg.chat.id;
 
     const photo = msg.photo[msg.photo.length - 1].file_id;
 
-    const course = waitingUsers[chatId] || 'Неизвестный курс';
+    const course = waitingUsers[chatId] || 'Неизвестный товар';
 
     bot.sendPhoto(ADMIN_ID, photo, {
 
@@ -289,7 +371,7 @@ bot.on('photo', (msg) => {
 
 👤 Пользователь: ${chatId}
 
-📚 Курс: ${course}`,
+📦 Товар: ${course}`,
 
         reply_markup: {
             inline_keyboard: [
@@ -315,14 +397,14 @@ bot.on('photo', (msg) => {
 `⏳ Чек отправлен на проверку.`);
 });
 
-// ПРИЁМ ФАЙЛОВ И PDF
+// ПРИЁМ ФАЙЛОВ
 bot.on('document', (msg) => {
 
     const chatId = msg.chat.id;
 
     const document = msg.document.file_id;
 
-    const course = waitingUsers[chatId] || 'Неизвестный курс';
+    const course = waitingUsers[chatId] || 'Неизвестный товар';
 
     bot.sendDocument(ADMIN_ID, document, {
 
@@ -331,7 +413,7 @@ bot.on('document', (msg) => {
 
 👤 Пользователь: ${chatId}
 
-📚 Курс: ${course}`,
+📦 Товар: ${course}`,
 
         reply_markup: {
             inline_keyboard: [
@@ -356,4 +438,5 @@ bot.on('document', (msg) => {
     bot.sendMessage(chatId,
 `⏳ Чек отправлен на проверку.`);
 });
+
 console.log('Бот запущен 🚀');
